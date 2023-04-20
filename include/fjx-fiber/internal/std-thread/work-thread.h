@@ -5,14 +5,14 @@
 #include "../fiber.h"
 #include "./thread-semaphore.h"
 
-struct __fjx_work_thread {
+struct fjx_work_thread__ {
     thrd_t                  id;
     fjx_fiber               thread_fiber;
     fjx_list                idle_link;
     fjx_list                link;
     fjx_thread_semaphore    s;
 };
-typedef struct __fjx_work_thread fjx_work_thread;
+typedef struct fjx_work_thread__ fjx_work_thread;
 
 DLL_LOCAL void work_thread_spawn(fjx_fiber_scheduler *);
 

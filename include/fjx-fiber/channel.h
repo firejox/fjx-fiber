@@ -3,8 +3,8 @@
 
 #include "./utils.h"
 
-struct __fjx_fiber_channel;
-typedef struct __fjx_fiber_channel fjx_fiber_channel;
+struct fjx_fiber_channel__;
+typedef struct fjx_fiber_channel__ fjx_fiber_channel;
 
 #define CHANNEL_SUCCESS 0
 #define CHANNEL_CLOSED  1

@@ -3,7 +3,7 @@
 
 #include "./utils.h"
 
-struct __fjx_fiber_memory {
+struct fjx_fiber_memory__ {
     void *addr;
     size_t size;
     fjx_avl_node link;

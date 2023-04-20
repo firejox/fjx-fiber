@@ -3,14 +3,14 @@
 
 #include <threads.h>
 
-struct __fjx_rwlock {
+struct fjx_rwlock__ {
     mtx_t   m;
     cnd_t   cond;
     int     w_waited;
     int     r_reading;
     int     on_write;
 };
-typedef struct __fjx_rwlock fjx_rwlock;
+typedef struct fjx_rwlock__ fjx_rwlock;
 
 void fjx_rwlock_init(fjx_rwlock *);
 void fjx_rwlock_lockr(fjx_rwlock *);

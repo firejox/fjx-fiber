@@ -3,10 +3,10 @@
 
 #include <pthread.h>
 
-struct __fjx_spinlock {
+struct fjx_spinlock__ {
     pthread_spinlock_t impl;
 };
-typedef struct __fjx_spinlock fjx_spinlock;
+typedef struct fjx_spinlock__ fjx_spinlock;
 
 void fjx_spinlock_init(fjx_spinlock *);
 void fjx_spinlock_lock(fjx_spinlock *);

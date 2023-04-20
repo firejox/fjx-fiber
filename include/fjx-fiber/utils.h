@@ -4,10 +4,10 @@
 #include "fjx-utils/list.h"
 #include "fjx-utils/avl_tree.h"
 
-struct __fjx_fiber;
-typedef struct __fjx_fiber fjx_fiber;
+struct fjx_fiber__;
+typedef struct fjx_fiber__ fjx_fiber;
 
-struct __fjx_fiber_scheduler;
-typedef struct __fjx_fiber_scheduler fjx_fiber_scheduler;
+struct fjx_fiber_scheduler__;
+typedef struct fjx_fiber_scheduler__ fjx_fiber_scheduler;
 
 #endif

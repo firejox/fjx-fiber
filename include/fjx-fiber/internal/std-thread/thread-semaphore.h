@@ -4,12 +4,12 @@
 #include "../visibility.h"
 #include <threads.h>
 
-struct __fjx_thread_semaphore {
+struct fjx_thread_semaphore__ {
     mtx_t   m;
     cnd_t   c;
     unsigned count;
 };
-typedef struct __fjx_thread_semaphore fjx_thread_semaphore;
+typedef struct fjx_thread_semaphore__ fjx_thread_semaphore;
 
 DLL_LOCAL void fjx_thread_semaphore_init(fjx_thread_semaphore *, unsigned);
 DLL_LOCAL void fjx_thread_semaphore_wait(fjx_thread_semaphore *);

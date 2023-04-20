@@ -4,7 +4,7 @@
 #include "fjx-fiber/mutex.h"
 #include <stdlib.h>
 
-struct __fjx_fiber_mutex {
+struct fjx_fiber_mutex__ {
     fjx_spinlock lock;
     fjx_list fiber_list;
     int hold;

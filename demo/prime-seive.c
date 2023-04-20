@@ -59,5 +59,5 @@ int main(void) {
         ch = ch_next;
     }
 
-    return 0;
+    exit(EXIT_SUCCESS);
 }

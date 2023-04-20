@@ -3,8 +3,8 @@
 
 #include "./utils.h"
 
-struct __fjx_fiber_mutex;
-typedef struct __fjx_fiber_mutex fjx_fiber_mutex;
+struct fjx_fiber_mutex__;
+typedef struct fjx_fiber_mutex__ fjx_fiber_mutex;
 
 fjx_fiber_mutex *fiber_mutex_create(void);
 void fiber_mutex_lock(fjx_fiber_scheduler*, fjx_fiber_mutex*);

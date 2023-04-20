@@ -4,6 +4,6 @@
 #include "./visibility.h"
 #include "../utils.h"
 
-struct __fjx_fiber_memory;
-typedef struct __fjx_fiber_memory fjx_fiber_memory;
+struct fjx_fiber_memory__;
+typedef struct fjx_fiber_memory__ fjx_fiber_memory;
 #endif

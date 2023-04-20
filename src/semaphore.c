@@ -4,7 +4,7 @@
 #include "fjx-fiber/semaphore.h"
 #include <stdlib.h>
 
-struct __fjx_fiber_semaphore {
+struct fjx_fiber_semaphore__ {
     fjx_spinlock lock;
     fjx_list fiber_list;
     unsigned int count;

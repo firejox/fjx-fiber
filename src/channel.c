@@ -16,7 +16,7 @@ typedef struct {
     int state;
 } channel_item;
 
-struct __fjx_fiber_channel {
+struct fjx_fiber_channel__ {
     fjx_spinlock lock;
     fjx_list ritem_list;
     fjx_list witem_list;

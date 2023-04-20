@@ -4,7 +4,7 @@
 #include "./utils.h"
 #include "../fiber.h"
 
-struct __fjx_fiber {
+struct fjx_fiber__ {
     void *stack_top;
     fjx_list link;
 };

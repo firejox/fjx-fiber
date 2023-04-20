@@ -7,7 +7,7 @@
 #include "./rwlock.h"
 #include "../scheduler.h"
 
-struct __fjx_fiber_scheduler {
+struct fjx_fiber_scheduler__ {
     fjx_spinlock queue_lock;
     fjx_list fiber_list;
     fjx_list idle_thread_list;

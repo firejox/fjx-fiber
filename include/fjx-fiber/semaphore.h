@@ -3,8 +3,8 @@
 
 #include "./utils.h"
 
-struct __fjx_fiber_semaphore;
-typedef struct __fjx_fiber_semaphore fjx_fiber_semaphore;
+struct fjx_fiber_semaphore__;
+typedef struct fjx_fiber_semaphore__ fjx_fiber_semaphore;
 
 fjx_fiber_semaphore *fiber_semaphore_create(unsigned int);
 void fiber_semaphore_signal(fjx_fiber_scheduler*, fjx_fiber_semaphore*);

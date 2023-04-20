@@ -3,10 +3,10 @@
 
 #include <pthread.h>
 
-struct __fjx_rwlock {
+struct fjx_rwlock__ {
     pthread_rwlock_t impl;
 };
-typedef struct __fjx_rwlock fjx_rwlock;
+typedef struct fjx_rwlock__ fjx_rwlock;
 
 void fjx_rwlock_init(fjx_rwlock *);
 void fjx_rwlock_lockr(fjx_rwlock *);
