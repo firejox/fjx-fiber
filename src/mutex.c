@@ -69,7 +69,9 @@ void fiber_mutex_destroy(
 
     fjx_spinlock_lock(&m->lock);
     if (m->hold == 1) {
-        fjx_list_replace_init(&m->fiber_list, &fiber_list);
+        if (!fjx_list_empty(&m->fiber_list)) {
+            fjx_list_replace_init(&m->fiber_list, &fiber_list);
+        }
     }
     fjx_spinlock_unlock(&m->lock);
     fjx_spinlock_destroy(&m->lock);

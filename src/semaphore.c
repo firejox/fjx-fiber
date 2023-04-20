@@ -67,7 +67,9 @@ void fiber_semaphore_destroy(
 
     fjx_spinlock_lock(&s->lock);
     if (s->count == 0) {
-        fjx_list_replace_init(&s->fiber_list, &fiber_list);
+        if (!fjx_list_empty(&s->fiber_list)) {
+            fjx_list_replace_init(&s->fiber_list, &fiber_list);
+        }
     }
     fjx_spinlock_unlock(&s->lock);
     fjx_spinlock_destroy(&s->lock);

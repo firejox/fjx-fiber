@@ -13,4 +13,5 @@ endmacro()
 
 add_demo(hello-world hello-world.c)
 add_demo(hello2 hello2.c)
-add_demo(dining-philosopher dining_philosopher.c)
+add_demo(dining-philosopher dining-philosopher.c)
+add_demo(channel-test channel-test.c)

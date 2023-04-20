@@ -1,5 +1,5 @@
 
-set(LIB_SOURCE fiber-memory.c fiber.c scheduler.c semaphore.c mutex.c)
+set(LIB_SOURCE fiber-memory.c fiber.c scheduler.c semaphore.c mutex.c channel.c)
 set(THREAD_LIBS)
 
 find_package(Threads REQUIRED)
