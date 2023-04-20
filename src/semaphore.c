@@ -10,8 +10,6 @@ struct __fjx_fiber_semaphore {
     unsigned int count;
 };
 
-typedef void (*cleanup_func_t)(void*);
-
 fjx_fiber_semaphore *fiber_semaphore_create(unsigned int count) {
     fjx_fiber_semaphore *s = calloc(1, sizeof(fjx_fiber_semaphore));
 

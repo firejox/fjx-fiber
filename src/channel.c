@@ -9,8 +9,6 @@
 
 #define CHANNEL_ITEM_INIT -1
 
-typedef void (*cleanup_func_t)(void*);
-
 typedef struct {
     void *data;
     fjx_fiber fiber;

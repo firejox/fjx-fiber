@@ -10,8 +10,6 @@ struct __fjx_fiber_mutex {
     int hold;
 };
 
-typedef void (*cleanup_func_t)(void*);
-
 fjx_fiber_mutex *fiber_mutex_create(void) {
     fjx_fiber_mutex *m = calloc(1, sizeof(fjx_fiber_mutex));
 

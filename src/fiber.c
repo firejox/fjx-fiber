@@ -7,9 +7,6 @@ extern DLL_LOCAL void fiber_switch_impl(void **);
 extern DLL_LOCAL void fiber_load_unaryop(void);
 extern DLL_LOCAL void fiber_load_entrance(void);
 
-typedef void (*entrance_func_t)(void *);
-typedef void (*cleanup_func_t)(void *);
-
 void fiber_switch(fjx_fiber *f) {
     fiber_switch_impl(&f->stack_top);
 }
