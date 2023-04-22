@@ -3,14 +3,20 @@
 #include "fjx-fiber/internal/fiber.h"
 #include "fjx-fiber/semaphore.h"
 #include <stdlib.h>
+#include <limits.h>
 
 struct fjx_fiber_semaphore__ {
     fjx_spinlock lock;
     fjx_list fiber_list;
     unsigned int count;
+    unsigned int bound;
 };
 
 fjx_fiber_semaphore *fiber_semaphore_create(unsigned int count) {
+    return fiber_semaphore_bound_create(count, UINT_MAX);
+}
+
+fjx_fiber_semaphore *fiber_semaphore_bound_create(unsigned count, unsigned bound) {
     fjx_fiber_semaphore *s = calloc(1, sizeof(fjx_fiber_semaphore));
 
     ERROR_ABORT_IF(s, NULL, "allocate fiber semaphore failed");
@@ -18,6 +24,7 @@ fjx_fiber_semaphore *fiber_semaphore_create(unsigned int count) {
     fjx_spinlock_init(&s->lock);
     fjx_list_init(&s->fiber_list);
     s->count = count;
+    s->bound = bound;
 
     return s;
 }
@@ -32,7 +39,7 @@ void fiber_semaphore_signal(
         fjx_fiber *f = fjx_container_of(it, fjx_fiber, link);
         enqueue_fiber(sched, f);
     } else {
-        s->count ++;
+        if (s->count < s->bound) s->count++;
         fjx_spinlock_unlock(&s->lock);
     }
 }

@@ -1,12 +1,10 @@
 #ifndef fjx_spinlock_h
 #define fjx_spinlock_h
 
-#include "fjx-fiber/thread-config.h"
-
-#ifdef USE_PTHREAD
-#include "./pthread/spinlock.h"
+#ifndef USE_SYSTEM_THREAD
+#   include "./std-thread/spinlock.h"
 #else
-#include "./std-thread/spinlock.h"
+#   include "./pthread/spinlock.h"
 #endif
 
 #endif

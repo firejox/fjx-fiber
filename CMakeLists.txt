@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.21)
 
 project(fjx-fiber C ASM)
 
@@ -12,11 +12,7 @@ set(CMAKE_C_FLAGS "-Wall -Wextra")
 set(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb")
 set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
 
-option(USE_PTHREAD "Use pthread as backend" OFF)
-
-configure_file(
-    "${PROJECT_SOURCE_DIR}/include/fjx-fiber/internal/thread-config.h.in"
-    "${PROJECT_BINARY_DIR}/include/fjx-fiber/thread-config.h")
+option(USE_SYSTEM_THREAD "Use system thread as backend" OFF)
 
 add_subdirectory(src)
 

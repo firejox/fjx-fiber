@@ -1,8 +1,7 @@
 #ifndef fjx_fiber_utils_h
 #define fjx_fiber_utils_h
 
-#include "fjx-utils/list.h"
-#include "fjx-utils/avl_tree.h"
+#include <stddef.h>
 
 struct fjx_fiber__;
 typedef struct fjx_fiber__ fjx_fiber;

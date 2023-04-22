@@ -6,9 +6,11 @@
 struct fjx_fiber_channel__;
 typedef struct fjx_fiber_channel__ fjx_fiber_channel;
 
-#define CHANNEL_SUCCESS 0
-#define CHANNEL_CLOSED  1
-#define CHANNEL_DESTROY 2
+enum {
+    CHANNEL_SUCCESS = 0,
+    CHANNEL_CLOSED = 1,
+    CHANNEL_DESTROY = 2
+};
 
 fjx_fiber_channel *fiber_channel_create(size_t);
 int fiber_channel_send(fjx_fiber_scheduler*, fjx_fiber_channel*, void*);
