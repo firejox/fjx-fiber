@@ -1,4 +1,4 @@
-#define USE_PTHREAD
+#define USE_SYSTEM_THREAD
 #define _DEFAULT_SOURCE
 #include "fjx-fiber/internal/pthread.h"
 #include "fjx-fiber/internal/scheduler.h"
@@ -117,7 +117,7 @@ static void *work_thread_entry(void *data) {
     work_thread_init(&thread, NULL);
     th = &thread;
     fjx_spinlock_lock(&sched->tlist_init_lock);
-    fjx_list_add_tail(&sched->thread_list, &thread->link);
+    fjx_list_add_tail(&sched->thread_list, &thread.link);
     fjx_spinlock_unlock(&sched->tlist_init_lock);
     work_thread_loop(sched, &thread);
     return NULL;

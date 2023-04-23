@@ -2,8 +2,8 @@
 #define fjx_fiber_internal_work_thread_impl_h
 
 #include <pthread.h>
-#include "./thread-semaphore.h"
 #include "../fiber.h"
+#include "./thread-semaphore.h"
 
 struct fjx_work_thread__ {
     pthread_t               id;

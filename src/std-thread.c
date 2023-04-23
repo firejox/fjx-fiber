@@ -1,13 +1,15 @@
 #include "fjx-fiber/internal/std-thread.h"
 #include "fjx-fiber/internal/scheduler.h"
 #include "fjx-fiber/internal/debug.h"
+#include "fjx-fiber/internal/cpu-builtin.h"
 
 static inline void spinlock_lock(atomic_int *lock) {
-   while (atomic_exchange_explicit(lock, 1, memory_order_acquire)) {
+   while (atomic_exchange_explicit(lock, 1, memory_order_relaxed)) {
        while (atomic_load_explicit(lock, memory_order_relaxed)) {
-           __builtin_ia32_pause();
+           fjx_cpu_pause();
        }
    }
+   atomic_thread_fence(memory_order_acquire);
 }
 
 static inline void spinlock_unlock(atomic_int *lock) {
