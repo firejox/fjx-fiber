@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 project(fjx-fiber C ASM)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_STANDARD 23)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -17,9 +18,7 @@ option(USE_SYSTEM_THREAD "Use system thread as backend" OFF)
 add_subdirectory(src)
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC ${PROJECT_SOURCE_DIR}/include
-    PRIVATE ${PROJECT_SOURCE_DIR}/include/fjx-fiber/internal
-    PRIVATE ${PROJECT_BINARY_DIR}/include)
+    PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(demo)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
