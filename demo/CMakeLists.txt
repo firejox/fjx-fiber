@@ -5,9 +5,7 @@ macro(add_demo exec_name)
         PROPERTIES
             OUTPUT_NAME ${exec_name}
         )
-    target_include_directories("demo.${exec_name}"
-        PUBLIC ${PROJECT_SOURCE_DIR}/include)
-    target_link_libraries("demo.${exec_name}" ${PROJECT_NAME})
+    target_link_libraries("demo.${exec_name}" fiber)
 endmacro()
 
 add_demo(hello-world hello-world.c)
