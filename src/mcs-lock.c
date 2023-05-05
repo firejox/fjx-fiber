@@ -1,33 +1,34 @@
+#include <stdatomic.h>
 #include "fjx-fiber/internal/mcs-lock.h"
 #include "fjx-fiber/internal/cpu-builtin.h"
 
 #define no_opt(x) (*(volatile typeof(x) *)(&(x)))
 
-void fjx_mcslock_init(fjx_mcslock_shared *lock) {
-    atomic_init(lock, NULL);
-}
+#define await_until(x) do { while (!(x)) { fjx_cpu_pause(); } } while (0)
+#define await_until2(sx, wx) do { if (!(sx)) { await_until(wx); } } while (0)
 
-void fjx_mcslock_lock(fjx_mcslock_shared *lock, fjx_mcslock *node) {
-    fjx_mcslock *prev;
+#define relaxed_load(x) atomic_load_explicit(&(x), memory_order_relaxed)
+#define relaxed_store(x, y) atomic_store_explicit(&(x), y, memory_order_relaxed)
 
-    node->next = NULL;
-    node->locked = 0;
-    prev = atomic_exchange_explicit(lock, node, memory_order_relaxed);
-    atomic_thread_fence(memory_order_acquire);
+#define acquire_load(x) atomic_load_explicit(&(x), memory_order_acquire)
+#define release_store(x, y) atomic_store_explicit(&(x), y, memory_order_release)
+
+void fjx_mcslock_lock(fjx_mcslock_atomic_ptr *lock, fjx_mcslock *node) {
+    fjx_mcslock *prev = atomic_exchange_explicit(lock, node, memory_order_relaxed);
 
     if (prev == NULL) {
         return;
     }
 
-    prev->next = node;
-    while (no_opt(node->locked) == 0) {
-        fjx_cpu_pause();
-    }
+    release_store(prev->next, node);
+    await_until2(
+        acquire_load(node->locked) != 0,
+        relaxed_load(node->locked) != 0);
 }
 
-void fjx_mcslock_unlock(fjx_mcslock_shared *lock, fjx_mcslock *node) {
+void fjx_mcslock_unlock(fjx_mcslock_atomic_ptr *lock, fjx_mcslock *node) {
     fjx_mcslock *tmp = node;
-    fjx_mcslock *next = node->next;
+    fjx_mcslock *next = acquire_load(node->next);
 
     if (next == NULL) {
         if (atomic_compare_exchange_strong_explicit(
@@ -39,10 +40,8 @@ void fjx_mcslock_unlock(fjx_mcslock_shared *lock, fjx_mcslock *node) {
             return;
         }
 
-        while ((next = no_opt(node->next)) == NULL) {
-            fjx_cpu_pause();
-        }
+        await_until((next = relaxed_load(node->next)) != NULL);
     }
 
-    next->locked = 1;
+    release_store(next->locked, 1);
 }
