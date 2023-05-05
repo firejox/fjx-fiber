@@ -43,9 +43,5 @@ void fjx_mcshlock_lock(fjx_mcshlock *lock) {
 
 void fjx_mcshlock_unlock(fjx_mcshlock *lock) {
     fjx_mcshlock *succ = lock->msg;
-    if (succ != lock) {
-        succ->msg = lock;
-    } else {
-        lock->msg = NULL;
-    }
+    succ->msg = (succ != lock) ? lock : NULL;
 }
