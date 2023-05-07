@@ -7,7 +7,7 @@
 #define await_until(x) while(!(x)) { fjx_cpu_pause(); }
 
 void fjx_mcshlock_lock(fjx_mcshlock *lock) {
-    fjx_mcshlock mm = {lock, NULL};
+    fjx_mcshlock mm = {lock, lock};
 
     fjx_mcshlock *prev = atomic_exchange_explicit(
             &lock->tail,
@@ -19,7 +19,7 @@ void fjx_mcshlock_lock(fjx_mcshlock *lock) {
         lock->msg = lock;
     } else {
         atomic_store_explicit(&prev->tail, &mm, memory_order_release);
-        await_until(no_opt(mm.msg) != NULL);
+        await_until(no_opt(mm.msg) == NULL);
     }
 
     fjx_mcshlock *succ = atomic_load_explicit(&mm.tail, memory_order_acquire);
@@ -43,5 +43,5 @@ void fjx_mcshlock_lock(fjx_mcshlock *lock) {
 
 void fjx_mcshlock_unlock(fjx_mcshlock *lock) {
     fjx_mcshlock *succ = lock->msg;
-    succ->msg = (succ != lock) ? lock : NULL;
+    succ->msg = NULL;
 }
