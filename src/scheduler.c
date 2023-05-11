@@ -39,7 +39,7 @@ void fiber_scheduler_destroy(
     free(sched);
 }
 
-fjx_fiber *get_avaiable_fiber_unsafe(
+fjx_fiber *get_available_fiber_unsafe(
         fjx_fiber_scheduler *sched) {
     if (fjx_list_empty(&sched->fiber_list)) {
         return &current_work_thread(sched)->thread_fiber;
@@ -104,7 +104,7 @@ static inline void insert_memory(
     fjx_rwlock_unlockw(&sched->pool_lock);
 }
 
-fjx_fiber_memory *get_avaiable_memory(
+fjx_fiber_memory *get_available_memory(
         fjx_fiber_scheduler *sched) {
     fjx_spinlock_lock(&sched->disposed_fiber_lock);
 

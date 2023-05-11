@@ -24,8 +24,8 @@ struct fjx_fiber_scheduler__ {
     fjx_work_thread main_th;
 };
 
-DLL_LOCAL fjx_fiber *get_avaiable_fiber_unsafe(fjx_fiber_scheduler *);
-DLL_LOCAL fjx_fiber_memory *get_avaiable_memory(fjx_fiber_scheduler *);
+DLL_LOCAL fjx_fiber *get_available_fiber_unsafe(fjx_fiber_scheduler *);
+DLL_LOCAL fjx_fiber_memory *get_available_memory(fjx_fiber_scheduler *);
 DLL_LOCAL fjx_work_thread *try_get_idle_thread_unsafe(fjx_fiber_scheduler *);
 DLL_LOCAL void enqueue_fiber(fjx_fiber_scheduler *, fjx_fiber *);
 DLL_LOCAL void enqueue_fiber_list(fjx_fiber_scheduler *, fjx_list *);

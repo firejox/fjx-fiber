@@ -56,7 +56,7 @@ void fiber_semaphore_wait(
         fjx_list_add_tail(&s->fiber_list, &f.link);
 
         fjx_spinlock_lock(&sched->queue_lock);
-        f.stack_top = get_avaiable_fiber_unsafe(sched)->stack_top;
+        f.stack_top = get_available_fiber_unsafe(sched)->stack_top;
         fjx_spinlock_unlock(&sched->queue_lock);
 
         fiber_insert_cleanup(&f, (cleanup_func_t)fjx_spinlock_unlock, &s->lock);

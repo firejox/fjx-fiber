@@ -27,7 +27,7 @@ void fiber_yield(fjx_fiber_scheduler *sched) {
     fjx_fiber f;
 
     fjx_spinlock_lock(&sched->queue_lock);
-    f.stack_top = get_avaiable_fiber_unsafe(sched)->stack_top;
+    f.stack_top = get_available_fiber_unsafe(sched)->stack_top;
     fjx_list_add_tail(&sched->fiber_list, &f.link);
     fiber_insert_cleanup(&f, (cleanup_func_t)fjx_spinlock_unlock, &sched->queue_lock);
     fiber_switch(&f);
@@ -37,7 +37,7 @@ void fiber_exit(fjx_fiber_scheduler *sched) {
     fjx_fiber f;
 
     fjx_spinlock_lock(&sched->queue_lock);
-    f.stack_top = get_avaiable_fiber_unsafe(sched)->stack_top;
+    f.stack_top = get_available_fiber_unsafe(sched)->stack_top;
     fjx_spinlock_unlock(&sched->queue_lock);
 
     fjx_spinlock_lock(&sched->disposed_fiber_lock);
@@ -58,7 +58,7 @@ void *fiber_spawn_stack_top(
         fjx_fiber_scheduler *sched,
         entrance_func_t entrance,
         void *data) {
-    fjx_fiber_memory *mem = get_avaiable_memory(sched);
+    fjx_fiber_memory *mem = get_available_memory(sched);
     void **stack_ptr = (void **)align_address(((char *)mem->addr) + mem->size);
     *(stack_ptr - 1) = sched;
     *(stack_ptr - 2) = (void *)fiber_exit;

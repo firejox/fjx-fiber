@@ -65,7 +65,7 @@ int fiber_channel_send(
                 fjx_list_add_tail(&ch->witem_list, &src.link);
 
                 fjx_spinlock_lock(&sched->queue_lock);
-                src.fiber.stack_top = get_avaiable_fiber_unsafe(sched)->stack_top;
+                src.fiber.stack_top = get_available_fiber_unsafe(sched)->stack_top;
                 fjx_spinlock_unlock(&sched->queue_lock);
                 fiber_insert_cleanup(&src.fiber, (cleanup_func_t)fjx_spinlock_unlock, &ch->lock);
                 fiber_switch(&src.fiber);
@@ -94,7 +94,7 @@ int fiber_channel_receive(
             fjx_list_add_tail(&ch->ritem_list, &dest.link);
 
             fjx_spinlock_lock(&sched->queue_lock);
-            dest.fiber.stack_top = get_avaiable_fiber_unsafe(sched)->stack_top;
+            dest.fiber.stack_top = get_available_fiber_unsafe(sched)->stack_top;
             fjx_spinlock_unlock(&sched->queue_lock);
             fiber_insert_cleanup(&dest.fiber, (cleanup_func_t)fjx_spinlock_unlock, &ch->lock);
             fiber_switch(&dest.fiber);
