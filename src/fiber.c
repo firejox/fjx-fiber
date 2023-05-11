@@ -36,9 +36,7 @@ void fiber_yield(fjx_fiber_scheduler *sched) {
 void fiber_exit(fjx_fiber_scheduler *sched) {
     fjx_fiber f;
 
-    fjx_spinlock_lock(&sched->queue_lock);
-    f.stack_top = get_available_fiber_unsafe(sched)->stack_top;
-    fjx_spinlock_unlock(&sched->queue_lock);
+    get_available_fiber(sched, &f);
 
     fjx_spinlock_lock(&sched->disposed_fiber_lock);
     fjx_list_add_tail(&sched->disposed_fiber_list, &f.link);

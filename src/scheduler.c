@@ -39,6 +39,22 @@ void fiber_scheduler_destroy(
     free(sched);
 }
 
+bool get_available_fiber(
+        fjx_fiber_scheduler *sched,
+        fjx_fiber *f) {
+    fjx_spinlock_lock(&sched->queue_lock);
+    if (fjx_list_empty(&sched->fiber_list)) {
+        fjx_spinlock_unlock(&sched->queue_lock);
+        f->stack_top = current_work_thread(sched)->thread_fiber.stack_top;
+        return true;
+    } else {
+        fjx_list *it = fjx_list_pop_head(&sched->fiber_list);
+        fjx_spinlock_unlock(&sched->queue_lock);
+        f->stack_top = fjx_container_of(it, fjx_fiber, link)->stack_top;
+        return false;
+    }
+}
+
 fjx_fiber *get_available_fiber_unsafe(
         fjx_fiber_scheduler *sched) {
     if (fjx_list_empty(&sched->fiber_list)) {

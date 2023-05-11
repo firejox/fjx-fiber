@@ -35,9 +35,7 @@ void fiber_mutex_lock(
 
         fjx_list_add_tail(&m->fiber_list, &f.link);
 
-        fjx_spinlock_lock(&sched->queue_lock);
-        f.stack_top = get_available_fiber_unsafe(sched)->stack_top;
-        fjx_spinlock_unlock(&sched->queue_lock);
+        get_available_fiber(sched, &f);
 
         fiber_insert_cleanup(&f, (cleanup_func_t)fjx_spinlock_unlock, &m->lock);
         fiber_switch(&f);
