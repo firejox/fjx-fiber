@@ -7,6 +7,7 @@ struct fjx_fiber_memory__ {
     void *addr;
     size_t size;
     fjx_avl_node link;
+    void *stack_top;
 };
 
 DLL_LOCAL fjx_fiber_memory *fiber_memory_create(void);

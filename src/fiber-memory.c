@@ -9,6 +9,14 @@ enum {
     STACK_SIZE = (size_t) 8 * 1024
 };
 
+enum {
+    ALIGN16_MASK = ~((uintptr_t)0xf)
+};
+
+static inline void *align_address(void *addr) {
+    return (void *)(((uintptr_t)addr) & ALIGN16_MASK);
+}
+
 static inline void *allocate_stack(void) {
     void *addr = mmap(
         NULL,
@@ -24,17 +32,20 @@ static inline void *allocate_stack(void) {
 }
 
 fjx_fiber_memory *fiber_memory_create(void) {
-    fjx_fiber_memory *mem = calloc(1, sizeof(fjx_fiber_memory));
+    struct {
+        _Alignas(16) fjx_fiber_memory _;
+    } m;
 
-    ERROR_ABORT_IF(mem, NULL, "allocate fiber memory failed");
+    void *addr = allocate_stack();
+    fjx_fiber_memory *mem = align_address(((char*)addr) + STACK_SIZE - sizeof(m));
 
-    mem->addr = allocate_stack();
+    mem->addr = addr;
     mem->size = STACK_SIZE;
     fjx_avl_node_init(&mem->link);
+    mem->stack_top = mem;
     return mem;
 }
 
 void fiber_memory_destroy(fjx_fiber_memory *mem) {
     munmap(mem->addr, mem->size);
-    free(mem);
 }

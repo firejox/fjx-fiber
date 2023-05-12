@@ -69,8 +69,7 @@ static inline bool
 fiber_memory_in_range(
         fjx_fiber_memory *mem,
         void * const addr) {
-    void * const top = ((char *)mem->addr) + mem->size;
-    return (mem->addr <= addr) && (addr < top);
+    return (mem->addr <= addr) && (addr < mem->stack_top);
 }
 
 static inline fjx_fiber_memory *

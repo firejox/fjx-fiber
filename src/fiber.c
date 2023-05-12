@@ -57,7 +57,7 @@ void *fiber_spawn_stack_top(
         entrance_func_t entrance,
         void *data) {
     fjx_fiber_memory *mem = get_available_memory(sched);
-    void **stack_ptr = (void **)align_address(((char *)mem->addr) + mem->size);
+    void **stack_ptr = (void **)mem->stack_top;
     *(stack_ptr - 1) = sched;
     *(stack_ptr - 2) = (void *)fiber_exit;
     *(stack_ptr - 3) = data;
