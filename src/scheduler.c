@@ -55,16 +55,6 @@ bool get_available_fiber(
     }
 }
 
-fjx_fiber *get_available_fiber_unsafe(
-        fjx_fiber_scheduler *sched) {
-    if (fjx_list_empty(&sched->fiber_list)) {
-        return &current_work_thread(sched)->thread_fiber;
-    } else {
-        fjx_list *it = fjx_list_pop_head(&sched->fiber_list);
-        return fjx_container_of(it, fjx_fiber, link);
-    }
-}
-
 static inline bool
 fiber_memory_in_range(
         fjx_fiber_memory *mem,
