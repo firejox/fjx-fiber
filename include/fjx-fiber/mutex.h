@@ -1,8 +1,6 @@
 #ifndef fjx_fiber_mutex_h
 #define fjx_fiber_mutex_h
 
-#include "./utils.h"
-
 struct fjx_fiber_mutex__;
 typedef struct fjx_fiber_mutex__ fjx_fiber_mutex;
 

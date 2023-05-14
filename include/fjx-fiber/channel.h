@@ -1,7 +1,7 @@
 #ifndef fjx_fiber_channel_h
 #define fjx_fiber_channel_h
 
-#include "./utils.h"
+#include <stddef.h>
 
 struct fjx_fiber_channel__;
 typedef struct fjx_fiber_channel__ fjx_fiber_channel;

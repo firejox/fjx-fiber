@@ -1,8 +1,6 @@
 #ifndef fjx_fiber_semaphore_h
 #define fjx_fiber_semaphore_h
 
-#include "./utils.h"
-
 struct fjx_fiber_semaphore__;
 typedef struct fjx_fiber_semaphore__ fjx_fiber_semaphore;
 
