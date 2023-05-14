@@ -145,3 +145,7 @@ void work_thread_awake(fjx_work_thread *th, fjx_fiber *f) {
 void main_work_thread_init(fjx_fiber_scheduler *sched) {
     work_thread_init(&sched->main_th, fiber_spawn_stack_top(sched, main_work_entry, sched));
 }
+
+void work_thread_yield(void) {
+    sched_yield();
+}

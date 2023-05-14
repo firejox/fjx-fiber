@@ -2,6 +2,7 @@
 #define fjx_fiber_internal_work_thread_impl_h
 
 #include <pthread.h>
+#include <sched.h>
 #include "../fiber.h"
 #include "./thread-semaphore.h"
 
@@ -19,5 +20,7 @@ DLL_LOCAL void work_thread_spawn(fjx_fiber_scheduler *);
 DLL_LOCAL fjx_work_thread *current_work_thread(fjx_fiber_scheduler *);
 
 DLL_LOCAL void main_work_thread_init(fjx_fiber_scheduler *);
+
+DLL_LOCLA void work_thread_yield(void);
 
 #endif
