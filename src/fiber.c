@@ -26,11 +26,16 @@ void fiber_insert_cleanup(
 void fiber_yield(fjx_fiber_scheduler *sched) {
     fjx_fiber f;
 
-    fjx_spinlock_lock(&sched->queue_lock);
-    f.stack_top = get_available_fiber_unsafe(sched)->stack_top;
-    fjx_list_add_tail(&sched->fiber_list, &f.link);
-    fiber_insert_cleanup(&f, (cleanup_func_t)fjx_spinlock_unlock, &sched->queue_lock);
-    fiber_switch(&f);
+    if (get_available_fiber(sched, &f)) {
+        work_thread_yield();
+    } else {
+        fiber_insert_cleanup(&f,
+                (cleanup_func_t)fjx_spinlock_unlock,
+                &sched->queue_lock);
+        fjx_spinlock_lock(&sched->queue_lock);
+        fjx_list_add_tail(&sched->fiber_list, &f.link);
+        fiber_switch(&f);
+    }
 }
 
 void fiber_exit(fjx_fiber_scheduler *sched) {
