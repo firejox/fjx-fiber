@@ -65,7 +65,7 @@ static int fiber_channel_send_impl(
             } else {
                 fjx_list_add_tail(&ch->witem_list, &src.link);
 
-                get_available_fiber(sched, &src.fiber);
+                src.fiber.stack_top = current_work_thread_fiber(sched)->stack_top;
 
                 fiber_insert_cleanup(&src.fiber, (cleanup_func_t)fjx_spinlock_unlock, &ch->lock);
                 fiber_switch(&src.fiber);
@@ -102,7 +102,7 @@ static int fiber_channel_receive_impl(
         if (!ch->closed) {
             fjx_list_add_tail(&ch->ritem_list, &dest.link);
 
-            get_available_fiber(sched, &dest.fiber);
+            dest.fiber.stack_top = current_work_thread_fiber(sched)->stack_top;
 
             fiber_insert_cleanup(&dest.fiber, (cleanup_func_t)fjx_spinlock_unlock, &ch->lock);
             fiber_switch(&dest.fiber);

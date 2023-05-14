@@ -62,7 +62,7 @@ static void fiber_semaphore_wait_impl(
         fjx_fiber f;
         fjx_list_add_tail(&s->fiber_list, &f.link);
 
-        get_available_fiber(sched, &f);
+        f.stack_top = current_work_thread_fiber(sched)->stack_top;
 
         fiber_insert_cleanup(&f, (cleanup_func_t)fjx_spinlock_unlock, &s->lock);
         fiber_switch(&f);
