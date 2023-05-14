@@ -21,12 +21,10 @@ This is a prime-seive example.
 #include <stdlib.h>
 
 struct gen_data {
-    fjx_fiber_scheduler *sched;
     fjx_fiber_channel *ch;
 };
 
 struct filter_data {
-    fjx_fiber_scheduler *sched;
     fjx_fiber_channel *ch;
     fjx_fiber_channel *ch_next;
     int prime;
@@ -36,44 +34,42 @@ void generate(void *data) {
     struct gen_data *d = (struct gen_data*)data;
 
     for (int i = 2; ; i++) {
-        fiber_channel_send(d->sched, d->ch, &i);
+        fiber_channel_send(d->ch, &i);
     }
 }
 
 void filter(void *data) {
     struct filter_data *d = (struct filter_data*)data;
     int i;
-    while (true) {
-        fiber_channel_receive(d->sched, d->ch, &i);
+    while (1) {
+        fiber_channel_receive(d->ch, &i);
         if (i % d->prime) {
-            fiber_channel_send(d->sched, d->ch_next, &i);
+            fiber_channel_send(d->ch_next, &i);
         }
     }
 }
 
 int main(void) {
-    fjx_fiber_scheduler *sched = NULL;
     fjx_fiber_channel *ch = NULL, *ch_next = NULL;
 
-    sched = fiber_scheduler_create(2);
+    fiber_scheduler_init(2);
     ch = fiber_channel_create(sizeof(int));
-    struct gen_data g = {.sched = sched, .ch = ch};
+    struct gen_data g = {.ch = ch};
     struct filter_data f[103];
 
-    fiber_spawn(sched, generate, &g);
+    fiber_spawn(generate, &g);
 
     for (int i = 0; i < 100; i++) {
         int prime;
-        fiber_channel_receive(sched, ch, &prime);
+        fiber_channel_receive(ch, &prime);
         printf("%d\n", prime);
 
         ch_next = fiber_channel_create(sizeof(int));
-        f[i].sched = sched;
         f[i].ch = ch;
         f[i].ch_next = ch_next;
         f[i].prime = prime;
 
-        fiber_spawn(sched, filter, &f[i]);
+        fiber_spawn(filter, &f[i]);
         ch = ch_next;
     }
 
@@ -84,4 +80,3 @@ int main(void) {
 ## TODO
 
 * more platform support
-* better api design
