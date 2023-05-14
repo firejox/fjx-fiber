@@ -22,7 +22,7 @@ fjx_fiber_mutex *fiber_mutex_create(void) {
     return m;
 }
 
-void fiber_mutex_lock(
+static void fiber_mutex_lock_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_mutex *m) {
 
@@ -42,7 +42,14 @@ void fiber_mutex_lock(
     }
 }
 
-void fiber_mutex_unlock(
+void fiber_mutex_lock(
+        fjx_fiber_mutex *m) {
+    fiber_mutex_lock_impl(
+            current_fiber_scheduler(),
+            m);
+}
+
+static void fiber_mutex_unlock_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_mutex *m) {
     fjx_spinlock_lock(&m->lock);
@@ -57,7 +64,14 @@ void fiber_mutex_unlock(
     }
 }
 
-void fiber_mutex_destroy(
+void fiber_mutex_unlock(
+        fjx_fiber_mutex *m) {
+    fiber_mutex_unlock_impl(
+            current_fiber_scheduler(),
+            m);
+}
+
+static void fiber_mutex_destroy_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_mutex *m) {
     fjx_list fiber_list;
@@ -74,4 +88,11 @@ void fiber_mutex_destroy(
     free(m);
 
     enqueue_fiber_list(sched, &fiber_list);
+}
+
+void fiber_mutex_destroy(
+        fjx_fiber_mutex *m) {
+    fiber_mutex_destroy_impl(
+            current_fiber_scheduler(),
+            m);
 }

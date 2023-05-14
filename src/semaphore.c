@@ -29,7 +29,7 @@ fjx_fiber_semaphore *fiber_semaphore_bound_create(unsigned count, unsigned bound
     return s;
 }
 
-void fiber_semaphore_signal(
+static void fiber_semaphore_signal_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_semaphore *s) {
     fjx_spinlock_lock(&s->lock);
@@ -44,7 +44,14 @@ void fiber_semaphore_signal(
     }
 }
 
-void fiber_semaphore_wait(
+void fiber_semaphore_signal(
+        fjx_fiber_semaphore *s) {
+    fiber_semaphore_signal_impl(
+            current_fiber_scheduler(),
+            s);
+}
+
+static void fiber_semaphore_wait_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_semaphore *s) {
     fjx_spinlock_lock(&s->lock);
@@ -62,7 +69,14 @@ void fiber_semaphore_wait(
     }
 }
 
-void fiber_semaphore_destroy(
+void fiber_semaphore_wait(
+        fjx_fiber_semaphore *s) {
+    fiber_semaphore_wait_impl(
+            current_fiber_scheduler(),
+            s);
+}
+
+static void fiber_semaphore_destroy_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_semaphore *s) {
     fjx_list fiber_list;
@@ -79,4 +93,11 @@ void fiber_semaphore_destroy(
     free(s);
 
     enqueue_fiber_list(sched, &fiber_list);
+}
+
+void fiber_semaphore_destroy(
+        fjx_fiber_semaphore *s) {
+    fiber_semaphore_destroy_impl(
+            current_fiber_scheduler(),
+            s);
 }

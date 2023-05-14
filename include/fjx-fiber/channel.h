@@ -13,9 +13,9 @@ enum {
 };
 
 fjx_fiber_channel *fiber_channel_create(size_t);
-int fiber_channel_send(fjx_fiber_scheduler*, fjx_fiber_channel*, void*);
-int fiber_channel_receive(fjx_fiber_scheduler*, fjx_fiber_channel*, void*);
-void fiber_channel_close(fjx_fiber_scheduler*, fjx_fiber_channel*);
-void fiber_channel_destroy(fjx_fiber_scheduler*, fjx_fiber_channel*);
+int fiber_channel_send(fjx_fiber_channel*, void*);
+int fiber_channel_receive(fjx_fiber_channel*, void*);
+void fiber_channel_close(fjx_fiber_channel*);
+void fiber_channel_destroy(fjx_fiber_channel*);
 
 #endif

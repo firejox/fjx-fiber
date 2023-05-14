@@ -23,7 +23,7 @@ void fiber_insert_cleanup(
     f->stack_top = (void *)(stack_ptr - 4);
 }
 
-void fiber_yield(fjx_fiber_scheduler *sched) {
+static void fiber_yield_impl(fjx_fiber_scheduler *sched) {
     fjx_fiber f;
 
     if (get_available_fiber(sched, &f)) {
@@ -36,6 +36,10 @@ void fiber_yield(fjx_fiber_scheduler *sched) {
         fjx_list_add_tail(&sched->fiber_list, &f.link);
         fiber_switch(&f);
     }
+}
+
+void fiber_yield(void) {
+    fiber_yield_impl(current_fiber_scheduler());
 }
 
 void fiber_exit(fjx_fiber_scheduler *sched) {
@@ -72,7 +76,7 @@ void *fiber_spawn_stack_top(
     return (void *)(stack_ptr - 5);
 }
 
-void fiber_spawn(
+static void fiber_spawn_impl(
         fjx_fiber_scheduler *sched,
         entrance_func_t entrance,
         void *data) {
@@ -84,4 +88,12 @@ void fiber_spawn(
     fjx_fiber *f = (fjx_fiber *)(void *)((char *)align_address(stack_top) - sizeof(m));
     f->stack_top = stack_top;
     enqueue_fiber(sched, f);
+}
+
+void fiber_spawn(
+        entrance_func_t entrance,
+        void *data) {
+    fiber_spawn_impl(current_fiber_scheduler(),
+            entrance,
+            data);
 }

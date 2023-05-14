@@ -4,10 +4,13 @@
 #include "fjx-fiber/internal/fiber-memory.h"
 #include <stdlib.h>
 
-fjx_fiber_scheduler *fiber_scheduler_create(int num_threads) {
-    fjx_fiber_scheduler *sched = calloc(1, sizeof(fjx_fiber_scheduler));
-
-    ERROR_ABORT_IF(sched, NULL, "allocate scheduler failed");
+static void
+fiber_scheduler_init_impl(
+        fjx_fiber_scheduler *sched,
+        int num_threads) {
+    if (num_threads < 0) {
+        num_threads = 0;
+    }
 
     fjx_spinlock_init(&sched->queue_lock);
     fjx_list_init(&sched->fiber_list);
@@ -28,15 +31,19 @@ fjx_fiber_scheduler *fiber_scheduler_create(int num_threads) {
     for (int i = 0; i < num_threads; i++) {
         work_thread_spawn(sched);
     }
-
-    return sched;
 }
 
-void fiber_scheduler_destroy(
-        fjx_fiber_scheduler *sched) {
-    // TODO: graceful cleanup
-    // stop thread and cleanup is hard
-    free(sched);
+static fjx_fiber_scheduler main_sched, *cur_sched = NULL;
+
+void fiber_scheduler_init(int num_threads) {
+    if (cur_sched == NULL) {
+        fiber_scheduler_init_impl(&main_sched, num_threads);
+        cur_sched = &main_sched;
+    }
+}
+
+fjx_fiber_scheduler *current_fiber_scheduler(void) {
+    return cur_sched;
 }
 
 bool get_available_fiber(

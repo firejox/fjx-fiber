@@ -36,7 +36,7 @@ fjx_fiber_channel *fiber_channel_create(size_t item_size) {
     return ch;
 }
 
-int fiber_channel_send(
+static int fiber_channel_send_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_channel *ch,
         void* data) {
@@ -79,7 +79,16 @@ int fiber_channel_send(
     }
 }
 
-int fiber_channel_receive(
+int fiber_channel_send(
+        fjx_fiber_channel *ch,
+        void *data) {
+    return fiber_channel_send_impl(
+            current_fiber_scheduler(),
+            ch,
+            data);
+}
+
+static int fiber_channel_receive_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_channel *ch,
         void *data) {
@@ -118,7 +127,16 @@ int fiber_channel_receive(
     }
 }
 
-void fiber_channel_close(
+int fiber_channel_receive(
+        fjx_fiber_channel *ch,
+        void *data) {
+    return fiber_channel_receive_impl(
+            current_fiber_scheduler(),
+            ch,
+            data);
+}
+
+static void fiber_channel_close_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_channel *ch) {
     fjx_list ritem_list, fiber_list, *it = NULL;
@@ -145,7 +163,14 @@ void fiber_channel_close(
     }
 }
 
-void fiber_channel_destroy(
+void fiber_channel_close(
+        fjx_fiber_channel *ch) {
+    fiber_channel_close_impl(
+            current_fiber_scheduler(),
+            ch);
+}
+
+static void fiber_channel_destroy_impl(
         fjx_fiber_scheduler *sched,
         fjx_fiber_channel *ch) {
     fjx_list ritem_list, witem_list, fiber_list, *it = NULL;
@@ -178,4 +203,11 @@ void fiber_channel_destroy(
     }
 
     enqueue_fiber_list(sched, &fiber_list);
+}
+
+void fiber_channel_destroy(
+        fjx_fiber_channel *ch) {
+    fiber_channel_destroy_impl(
+            current_fiber_scheduler(),
+            ch);
 }
