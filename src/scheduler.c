@@ -163,6 +163,11 @@ void enqueue_fiber(
     }
 }
 
+void enqueue_fiber_pair(
+        fjx_fiber_pair *pair) {
+    enqueue_fiber(pair->sched, pair->f);
+}
+
 void enqueue_fiber_list(
         fjx_fiber_scheduler *sched,
         fjx_list *fiber_list) {
@@ -214,4 +219,10 @@ void enqueue_fiber_list(
             }
         }
     }
+}
+
+void recycle_fiber_pair(fjx_fiber_pair *pair) {
+    fjx_spinlock_lock(&pair->sched->disposed_fiber_lock);
+    fjx_list_add_tail(&pair->sched->disposed_fiber_list, &pair->f->link);
+    fjx_spinlock_unlock(&pair->sched->disposed_fiber_lock);
 }

@@ -29,11 +29,10 @@ static void fiber_yield_impl(fjx_fiber_scheduler *sched) {
     if (get_available_fiber(sched, &f)) {
         work_thread_yield();
     } else {
+        fjx_fiber_pair p = { .sched = sched, .f = &f };
         fiber_insert_cleanup(&f,
-                (cleanup_func_t)fjx_spinlock_unlock,
-                &sched->queue_lock);
-        fjx_spinlock_lock(&sched->queue_lock);
-        fjx_list_add_tail(&sched->fiber_list, &f.link);
+                (cleanup_func_t)enqueue_fiber_pair,
+                &p);
         fiber_switch(&f);
     }
 }
@@ -44,12 +43,11 @@ void fiber_yield(void) {
 
 void fiber_exit(fjx_fiber_scheduler *sched) {
     fjx_fiber f;
+    fjx_fiber_pair p = {.sched = sched, .f = &f};
 
     get_available_fiber(sched, &f);
 
-    fjx_spinlock_lock(&sched->disposed_fiber_lock);
-    fjx_list_add_tail(&sched->disposed_fiber_list, &f.link);
-    fiber_insert_cleanup(&f, (cleanup_func_t)fjx_spinlock_unlock, &sched->disposed_fiber_lock);
+    fiber_insert_cleanup(&f, (cleanup_func_t)recycle_fiber_pair, &p);
     fiber_switch(&f);
 }
 
