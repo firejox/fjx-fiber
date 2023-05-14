@@ -2,24 +2,22 @@
 #include <stdio.h>
 #include <unistd.h>
 
-fjx_fiber_scheduler *sched;
-
 void f(void* data) {
-    while (true) {
+    while (1) {
         puts((const char*)data);
-        fiber_yield(sched);
+        fiber_yield();
     }
 }
 
 int main(void) {
-    sched = fiber_scheduler_create(3);
+    fiber_scheduler_init(3);
 
-    fiber_spawn(sched, f, "Hello World1");
-    fiber_spawn(sched, f, "Hello World2");
-    fiber_spawn(sched, f, "Hello World3");
-    while (true) {
+    fiber_spawn(f, "Hello World1");
+    fiber_spawn(f, "Hello World2");
+    fiber_spawn(f, "Hello World3");
+    while (1) {
         puts("main Hello World");
-        fiber_yield(sched);
+        fiber_yield();
     }
 
     return 0;

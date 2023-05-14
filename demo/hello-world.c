@@ -6,11 +6,10 @@ void f(void *data) {
 }
 
 int main(void) {
-    fjx_fiber_scheduler *sched;
-    sched = fiber_scheduler_create(0);
+    fiber_scheduler_init(0);
 
-    fiber_spawn(sched, f, NULL);
-    fiber_yield(sched);
+    fiber_spawn(f, NULL);
+    fiber_yield();
 
     puts("main Hello World");
 

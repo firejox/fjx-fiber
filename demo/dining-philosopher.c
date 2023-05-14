@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-fjx_fiber_scheduler *sched;
 fjx_fiber_semaphore *s[5];
 fjx_fiber_mutex *m;
 fjx_fiber_semaphore *sync_s;
@@ -18,7 +17,7 @@ int state[5];
 void g(void* data) {
     sleep(5);
     fprintf(stderr, "notify\n");
-    fiber_semaphore_signal(sched, sync_s);
+    fiber_semaphore_signal(sync_s);
 }
 
 inline int left(int i) { return (i + 4) % 5; }
@@ -29,24 +28,24 @@ void test(int i) {
         state[left(i)] != EATING &&
         state[right(i)] != EATING) {
         state[i] = EATING;
-        fiber_semaphore_signal(sched, s[i]);
+        fiber_semaphore_signal(s[i]);
     }
 }
 
 void take_forks(int i) {
-    fiber_mutex_lock(sched, m);
+    fiber_mutex_lock(m);
     state[i] = HUNGRY;
     test(i);
-    fiber_mutex_unlock(sched, m);
-    fiber_semaphore_wait(sched, s[i]);
+    fiber_mutex_unlock(m);
+    fiber_semaphore_wait(s[i]);
 }
 
 void put_forks(int i) {
-    fiber_mutex_lock(sched, m);
+    fiber_mutex_lock(m);
     state[i] = THINKING;
     test(left(i));
     test(right(i));
-    fiber_mutex_unlock(sched, m);
+    fiber_mutex_unlock(m);
 }
 
 void f(void* data) {
@@ -65,7 +64,7 @@ void f(void* data) {
 }
 
 int main(void) {
-    sched = fiber_scheduler_create(8);
+    fiber_scheduler_init(8);
     m = fiber_mutex_create();
     for (int i = 0; i < 5; i++)
         s[i] = fiber_semaphore_bound_create(0, 1);
@@ -74,11 +73,11 @@ int main(void) {
     int id[] = {0, 1, 2, 3, 4};
 
     for (int i = 0; i < 5; i++) {
-        fiber_spawn(sched, f, &id[i]);
+        fiber_spawn(f, &id[i]);
     }
 
-    fiber_spawn(sched, g, NULL);
-    fiber_semaphore_wait(sched, sync_s);
+    fiber_spawn(g, NULL);
+    fiber_semaphore_wait(sync_s);
     fprintf(stderr, "wakeup\n");
     return 0;
 }
