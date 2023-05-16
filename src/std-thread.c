@@ -104,6 +104,22 @@ void fjx_thread_semaphore_destroy(fjx_thread_semaphore *s) {
     cnd_destroy(&s->c);
 }
 
+void fjx_thread_mutex_init(fjx_thread_mutex *m) {
+    mtx_init(&m->impl, mtx_plain);
+}
+
+void fjx_thread_mutex_lock(fjx_thread_mutex *m) {
+    mtx_lock(&m->impl);
+}
+
+void fjx_thread_mutex_unlock(fjx_thread_mutex *m) {
+    mtx_unlock(&m->impl);
+}
+
+void fjx_thread_mutex_destroy(fjx_thread_mutex *m) {
+    mtx_destroy(&m->impl);
+}
+
 static thread_local fjx_work_thread *th = NULL;
 
 static void work_thread_init(fjx_work_thread *t, void *stack_top) {

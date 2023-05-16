@@ -72,6 +72,24 @@ void fjx_thread_semaphore_destroy(fjx_thread_semaphore *s) {
     ERROR_ABORT_UNLESS(res, 0, "thread semaphore destroy failed");
 }
 
+void fjx_thread_mutex_init(fjx_thread_mutex *m) {
+    int res = pthread_mutex_init(&m->impl, NULL);
+    ERROR_ABORT_UNLESS(res, 0, "thread mutex init failed");
+}
+
+void fjx_thread_mutex_lock(fjx_thread_mutex *m) {
+    pthread_mutex_lock(&m->impl);
+}
+
+void fjx_thread_mutex_unlock(fjx_thread_mutex *m) {
+    pthread_mutex_unlock(&m->impl);
+}
+
+void fjx_thread_mutex_destroy(fjx_thread_mutex *m) {
+    int res = pthread_mutex_destroy(&m->impl);
+    ERROR_ABORT_UNLESS(res, 0, "thread mutex destroy failed");
+}
+
 static _Thread_local fjx_work_thread *th = NULL;
 
 static void work_thread_init(fjx_work_thread *t, void *stack_top) {

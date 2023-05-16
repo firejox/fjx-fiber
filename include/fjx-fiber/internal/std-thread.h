@@ -5,5 +5,6 @@
 #include "std-thread/rwlock.h"
 #include "std-thread/thread-semaphore.h"
 #include "std-thread/work-thread.h"
+#include "std-thread/mutex.h"
 
 #endif
