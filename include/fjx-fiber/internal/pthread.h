@@ -6,5 +6,6 @@
 #include "pthread/thread-semaphore.h"
 #include "pthread/work-thread.h"
 #include "pthread/mutex.h"
+#include "pthread/cond.h"
 
 #endif

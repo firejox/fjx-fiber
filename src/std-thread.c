@@ -120,6 +120,33 @@ void fjx_thread_mutex_destroy(fjx_thread_mutex *m) {
     mtx_destroy(&m->impl);
 }
 
+void fjx_thread_cond_init(fjx_thread_cond *c) {
+    cnd_init(&c->impl);
+}
+
+void fjx_thread_cond_wait(fjx_thread_cond *c, fjx_thread_mutex *m) {
+    cnd_wait(&c->impl, &m->impl);
+}
+
+void fjx_thread_cond_timedwait(
+        fjx_thread_cond *c,
+        fjx_thread_mutex *m,
+        struct timespec *t) {
+    cnd_timedwait(&c->impl, &m->impl, t);
+}
+
+void fjx_thread_cond_siganl(fjx_thread_cond *c) {
+    cnd_signal(&c->impl);
+}
+
+void fjx_thread_cond_broadcast(fjx_thread_cond *c) {
+    cnd_broadcast(&c->impl);
+}
+
+void fjx_thread_cond_destroy(fjx_thread_cond *c) {
+    cnd_destroy(&c->impl);
+}
+
 static thread_local fjx_work_thread *th = NULL;
 
 static void work_thread_init(fjx_work_thread *t, void *stack_top) {

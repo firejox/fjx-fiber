@@ -90,6 +90,35 @@ void fjx_thread_mutex_destroy(fjx_thread_mutex *m) {
     ERROR_ABORT_UNLESS(res, 0, "thread mutex destroy failed");
 }
 
+void fjx_thread_cond_init(fjx_thread_cond *c) {
+    int res = pthread_cond_init(&c->impl, NULL);
+    ERROR_ABORT_UNLESS(res, 0, "thread condition init failed");
+}
+
+void fjx_thread_cond_wait(fjx_thread_cond *c, fjx_thread_mutex *m) {
+    pthread_cond_wait(&c->impl, &m->impl);
+}
+
+void fjx_thread_cond_timedwait(
+        fjx_thread_cond *c,
+        fjx_thread_mutex *m,
+        struct timespec *t) {
+    pthread_cond_timedwait(&c->impl, &m->impl, t);
+}
+
+void fjx_thread_cond_siganl(fjx_thread_cond *c) {
+    pthread_cond_signal(&c->impl);
+}
+
+void fjx_thread_cond_broadcast(fjx_thread_cond *c) {
+    pthread_cond_broadcast(&c->impl);
+}
+
+void fjx_thread_cond_destroy(fjx_thread_cond *c) {
+    int res = pthread_cond_destroy(&c->impl);
+    ERROR_ABORT_UNLESS(res, 0, "thread condition destroy failed");
+}
+
 static _Thread_local fjx_work_thread *th = NULL;
 
 static void work_thread_init(fjx_work_thread *t, void *stack_top) {
