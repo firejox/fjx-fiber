@@ -3,6 +3,8 @@
 #include "fjx-fiber/internal/pthread.h"
 #include "fjx-fiber/internal/scheduler.h"
 #include "fjx-fiber/internal/debug.h"
+#include <stdlib.h>
+#include <sched.h>
 
 void fjx_spinlock_init(fjx_spinlock *lock) {
     int res = pthread_spin_init(&lock->impl, PTHREAD_PROCESS_PRIVATE);
@@ -117,6 +119,35 @@ void fjx_thread_cond_broadcast(fjx_thread_cond *c) {
 void fjx_thread_cond_destroy(fjx_thread_cond *c) {
     int res = pthread_cond_destroy(&c->impl);
     ERROR_ABORT_UNLESS(res, 0, "thread condition destroy failed");
+}
+
+typedef struct fjx_thread_init_pair__ {
+    thread_entry entry;
+    void *arg;
+} fjx_thread_init_pair;
+
+static void *fjx_thread_helper(void *data) {
+    fjx_thread_init_pair *p = (fjx_thread_init_pair *)data;
+    thread_entry entry = p->entry;
+    void *arg = p->arg;
+    free(p);
+    entry(arg);
+    return NULL;
+}
+
+void fjx_thread_spawn(thread_entry entry, void *arg) {
+    fjx_thread_init_pair *p = calloc(1, sizeof(fjx_thread_init_pair));
+    ERROR_ABORT_IF(p, NULL, "allocate memory failed");
+    p->entry = entry;
+    p->arg = arg;
+
+    pthread_t id;
+    int res = pthread_create(&id, NULL, fjx_thread_helper, p);
+    ERROR_ABORT_UNLESS(res, 0, "thread create failed");
+}
+
+void fjx_thread_yield(void) {
+    sched_yield();
 }
 
 static _Thread_local fjx_work_thread *th = NULL;

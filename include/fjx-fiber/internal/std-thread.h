@@ -7,5 +7,6 @@
 #include "std-thread/work-thread.h"
 #include "std-thread/mutex.h"
 #include "std-thread/cond.h"
+#include "std-thread/thread.h"
 
 #endif

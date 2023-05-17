@@ -2,6 +2,7 @@
 #include "fjx-fiber/internal/scheduler.h"
 #include "fjx-fiber/internal/debug.h"
 #include "fjx-fiber/internal/cpu-builtin.h"
+#include <stdlib.h>
 
 static inline void spinlock_lock(atomic_int *lock) {
    while (atomic_exchange_explicit(lock, 1, memory_order_relaxed)) {
@@ -145,6 +146,35 @@ void fjx_thread_cond_broadcast(fjx_thread_cond *c) {
 
 void fjx_thread_cond_destroy(fjx_thread_cond *c) {
     cnd_destroy(&c->impl);
+}
+
+typedef struct fjx_thread_init_pair__ {
+    thread_entry entry;
+    void *arg;
+} fjx_thread_init_pair;
+
+static int fjx_thread_helper(void *data) {
+    fjx_thread_init_pair *p = (fjx_thread_init_pair *)data;
+    thread_entry entry = p->entry;
+    void *arg = p->arg;
+    free(p);
+    entry(arg);
+    return 0;
+}
+
+void fjx_thread_spawn(thread_entry entry, void *arg) {
+    fjx_thread_init_pair *p = calloc(1, sizeof(fjx_thread_init_pair));
+    ERROR_ABORT_IF(p, NULL, "allocate memory failed");
+    p->entry = entry;
+    p->arg = arg;
+
+    thrd_t id;
+    int res = thrd_create(&id, fjx_thread_helper, p);
+    ERROR_ABORT_UNLESS(res, thrd_success, "thread create failed");
+}
+
+void fjx_thread_yield(void) {
+    thrd_yield();
 }
 
 static thread_local fjx_work_thread *th = NULL;

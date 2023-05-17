@@ -7,5 +7,6 @@
 #include "pthread/work-thread.h"
 #include "pthread/mutex.h"
 #include "pthread/cond.h"
+#include "pthread/thread.h"
 
 #endif
