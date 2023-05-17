@@ -171,11 +171,10 @@ void enqueue_fiber_pair(
 void enqueue_fiber_list(
         fjx_fiber_scheduler *sched,
         fjx_list *fiber_list) {
-    fjx_list *ix = NULL, *iy = NULL;
     fjx_list thread_list;
     fjx_list_init(&thread_list);
 
-    while (fjx_list_empty(fiber_list)) {
+    while (!fjx_list_empty(fiber_list)) {
         fjx_spinlock_lock(&sched->queue_lock);
         if (fjx_list_empty(&sched->idle_thread_list)) {
             fjx_list_add_list_tail(&sched->fiber_list, fiber_list);
@@ -186,22 +185,25 @@ void enqueue_fiber_list(
             fjx_spinlock_unlock(&sched->queue_lock);
 
             while (true) {
-                for (ix = fiber_list->next, iy = thread_list.next;
-                        ix != fiber_list && iy != &thread_list;
-                        ix = ix->next, iy = iy->next) {
+                fjx_list *ix = fiber_list->next, *iy = thread_list.next;
+                while (ix != fiber_list && iy != &thread_list) {
+                    fjx_list *tix = ix->next, *tiy = iy->next;
+
                     fjx_fiber *f = fjx_container_of(ix, fjx_fiber, link);
                     fjx_work_thread *th = fjx_container_of(iy, fjx_work_thread, idle_link);
 
                     th->thread_fiber.stack_top = f->stack_top;
                     fjx_thread_semaphore_signal(&th->s);
+
+                    ix = tix;
+                    iy = tiy;
                 }
 
                 if (ix == fiber_list) {
-                    thread_list.next = iy;
-
                     if (iy == &thread_list) {
                         return;
                     } else {
+                        fjx_list_link(&thread_list, iy);
                         fjx_spinlock_lock(&sched->queue_lock);
                         if (fjx_list_empty(&sched->fiber_list)) {
                             fjx_list_add_list(&sched->idle_thread_list, &thread_list);
@@ -213,7 +215,7 @@ void enqueue_fiber_list(
                         }
                     }
                 } else {
-                    fiber_list->next = ix;
+                    fjx_list_link(fiber_list, ix);
                     break;
                 }
             }
