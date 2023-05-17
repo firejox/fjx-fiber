@@ -14,4 +14,7 @@ typedef struct fjx_fiber_scheduler__ fjx_fiber_scheduler;
 struct fjx_fiber_memory__;
 typedef struct fjx_fiber_memory__ fjx_fiber_memory;
 
+struct fjx_work_thread__;
+typedef struct fjx_work_thread__ fjx_work_thread;
+
 #endif

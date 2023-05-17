@@ -27,7 +27,7 @@ static void fiber_yield_impl(fjx_fiber_scheduler *sched) {
     fjx_fiber f;
 
     if (get_available_fiber(sched, &f)) {
-        work_thread_yield();
+        fjx_thread_yield();
     } else {
         fjx_fiber_pair p = { .sched = sched, .f = &f };
         fiber_insert_cleanup(&f,

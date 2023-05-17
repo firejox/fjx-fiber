@@ -1,5 +1,12 @@
 
-set(LIB_SOURCE fiber-memory.c fiber.c scheduler.c semaphore.c mutex.c channel.c)
+set(LIB_SOURCE
+        fiber-memory.c
+        fiber.c
+        scheduler.c
+        semaphore.c
+        mutex.c
+        channel.c
+        work-thread.c)
 
 add_library(fiber-objects OBJECT)
 set_property(TARGET fiber-objects PROPERTY POSITION_INDEPENDENT_CODE ON)

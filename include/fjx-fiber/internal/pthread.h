@@ -4,7 +4,6 @@
 #include "pthread/spinlock.h"
 #include "pthread/rwlock.h"
 #include "pthread/thread-semaphore.h"
-#include "pthread/work-thread.h"
 #include "pthread/mutex.h"
 #include "pthread/cond.h"
 #include "pthread/thread.h"
