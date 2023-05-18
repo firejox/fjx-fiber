@@ -9,8 +9,8 @@ typedef struct fjx_timer_node__ {
 
 static inline bool
 timespec_comp(
-        struct timespec *p,
-        struct timespec *q) {
+        struct timespec * restrict p,
+        struct timespec * restrict q) {
     if (p->tv_sec != q->tv_sec) {
         return p->tv_sec < q->tv_sec;
     } else {
@@ -20,8 +20,8 @@ timespec_comp(
 
 static inline bool
 time_comp(
-        fjx_timer_node *p,
-        fjx_timer_node *q) {
+        fjx_timer_node * restrict p,
+        fjx_timer_node * restrict q) {
    return timespec_comp(&p->tp, &q->tp);
 }
 
@@ -130,50 +130,12 @@ void fiber_timer_set_timeout(
     }
 }
 
-
-static void split_time_tree(fjx_fiber_timer *timer, fjx_list *awake_list, struct timespec *tp) {
-    fjx_timer_node *max_time =
-        fjx_container_of(timer->max_time, fjx_timer_node, link);
-
-    fjx_splay_node **it = &timer->time_tree.root;
-    fjx_splay_node *p = NULL;
-    fjx_timer_node *p_node = NULL, *up = NULL;
-
-    if (!timespec_comp(tp, &max_time->tp)) {
-        fjx_list_replace_init(&timer->time_list, awake_list);
-        timer->time_tree.root = NULL;
-        timer->min_time = NULL;
-        timer->max_time = NULL;
-    } else {
-        for (p = *it; p != NULL; p = *it) {
-            p_node = fjx_container_of(p, fjx_timer_node, link);
-
-            if (timespec_comp(tp, &p_node->tp)) {
-                up = p_node;
-                it = &p->left;
-            } else {
-                it = &p->right;
-            }
-        }
-
-        fjx_list *first = timer->time_list.next;
-        fjx_list *last = up->f.link.prev;
-
-        fjx_list_link(awake_list, first);
-        fjx_list_link(last, awake_list);
-        fjx_list_link(&timer->time_list, &up->f.link);
-
-        fjx_splay_top(&up->link, &timer->time_tree);
-        timer->min_time = &up->link;
-        up->link.left = NULL;
-    }
-}
-
 static void timer_thread(void *data) {
     fjx_fiber_scheduler *sched = (fjx_fiber_scheduler *)data;
     fjx_fiber_timer *timer = &sched->timer;
     struct timespec cur;
     fjx_list awake_list;
+    fjx_timer_node *max_time, *min_time;
 
     while (true) {
         fjx_list_init(&awake_list);
@@ -186,16 +148,49 @@ static void timer_thread(void *data) {
         } else {
             while (true) {
                 timespec_get(&cur, TIME_UTC);
-                fjx_timer_node *tmp = fjx_container_of(timer->min_time, fjx_timer_node, link);
+                min_time = fjx_container_of(timer->min_time, fjx_timer_node, link);
 
-                if (!timespec_comp(&cur, &tmp->tp)) {
+                if (!timespec_comp(&cur, &min_time->tp)) {
                     break;
                 }
 
-                fjx_thread_cond_timedwait(&timer->c, &timer->m, &tmp->tp);
+                fjx_thread_cond_timedwait(&timer->c, &timer->m, &min_time->tp);
             }
 
-            split_time_tree(timer, &awake_list, &cur);
+            max_time = fjx_container_of(timer->max_time, fjx_timer_node, link);
+
+            if (!timespec_comp(&cur, &max_time->tp)) {
+                fjx_list_replace_init(&timer->time_list, &awake_list);
+                timer->time_tree.root = NULL;
+                timer->min_time = NULL;
+                timer->max_time = NULL;
+            } else {
+                fjx_splay_node **it = &timer->time_tree.root;
+                fjx_splay_node *p = NULL;
+                fjx_timer_node *p_node = NULL, *up = NULL;
+
+                for (p = *it; p != NULL; p = *it) {
+                    p_node = fjx_container_of(p, fjx_timer_node, link);
+
+                    if (timespec_comp(&cur, &p_node->tp)) {
+                        up = p_node;
+                        it = &p->left;
+                    } else {
+                        it = &p->right;
+                    }
+                }
+
+                fjx_list *first = timer->time_list.next;
+                fjx_list *last = up->f.link.prev;
+
+                fjx_list_link(&awake_list, first);
+                fjx_list_link(last, &awake_list);
+                fjx_list_link(&timer->time_list, &up->f.link);
+
+                fjx_splay_top(&up->link, &timer->time_tree);
+                timer->min_time = &up->link;
+                up->link.left = NULL;
+            }
         }
         fjx_thread_mutex_unlock(&timer->m);
 
