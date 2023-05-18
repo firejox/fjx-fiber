@@ -28,6 +28,9 @@ fiber_scheduler_init_impl(
     main_work_thread_init(sched);
     fjx_list_add_tail(&sched->thread_list, &sched->main_th.link);
 
+    fiber_timer_init(&sched->timer);
+    start_timer_thread(sched);
+
     for (int i = 0; i < num_threads; i++) {
         work_thread_spawn(sched);
     }

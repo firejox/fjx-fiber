@@ -6,7 +6,8 @@ set(LIB_SOURCE
         semaphore.c
         mutex.c
         channel.c
-        work-thread.c)
+        work-thread.c
+        timer.c)
 
 add_library(fiber-objects OBJECT)
 set_property(TARGET fiber-objects PROPERTY POSITION_INDEPENDENT_CODE ON)

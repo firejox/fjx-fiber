@@ -5,6 +5,7 @@
 #include "./work-thread.h"
 #include "./spinlock.h"
 #include "./rwlock.h"
+#include "./timer.h"
 #include "../scheduler.h"
 
 struct fjx_fiber_scheduler__ {
@@ -22,6 +23,8 @@ struct fjx_fiber_scheduler__ {
     fjx_avl fiber_pool;
 
     fjx_work_thread main_th;
+
+    fjx_fiber_timer timer;
 };
 
 typedef struct fjx_fiber_pair__ {

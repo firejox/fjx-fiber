@@ -6,5 +6,6 @@
 #include "fjx-fiber/semaphore.h"
 #include "fjx-fiber/mutex.h"
 #include "fjx-fiber/channel.h"
+#include "fjx-fiber/timer.h"
 
 #endif
