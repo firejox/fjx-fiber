@@ -15,13 +15,15 @@ enum {
 int state[5];
 
 void g(void* data) {
-    sleep(5);
+    struct timespec d = {.tv_sec = 5, .tv_nsec = 0};
+    fiber_sleep(&d);
     fprintf(stderr, "notify\n");
+
     fiber_semaphore_signal(sync_s);
 }
 
-inline int left(int i) { return (i + 4) % 5; }
-inline int right(int i) { return (i + 1) % 5; }
+static inline int left(int i) { return (i + 4) % 5; }
+static inline int right(int i) { return (i + 1) % 5; }
 
 void test(int i) {
     if (state[i] == HUNGRY &&
@@ -50,6 +52,7 @@ void put_forks(int i) {
 
 void f(void* data) {
     int id = *(int*)data;
+    struct timespec d = {.tv_sec = 0, .tv_nsec = 1000};
 
     while (1) {
         printf("ph %d wants to eat\n", id);
@@ -60,6 +63,7 @@ void f(void* data) {
         put_forks(id);
         printf("ph %d put right fork\n", id);
         printf("ph %d put left fork\n", id);
+        fiber_sleep(&d);
     }
 }
 
