@@ -41,7 +41,7 @@ void fiber_yield(void) {
     fiber_yield_impl(current_fiber_scheduler());
 }
 
-void fiber_exit(fjx_fiber_scheduler *sched) {
+static void fiber_exit(fjx_fiber_scheduler *sched) {
     fjx_fiber f;
     fjx_fiber_pair p = {.sched = sched, .f = &f};
 
