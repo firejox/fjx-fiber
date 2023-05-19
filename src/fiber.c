@@ -11,9 +11,9 @@ void fiber_switch(fjx_fiber *f) {
     fiber_switch_impl(&f->stack_top);
 }
 
-void fiber_insert_cleanup(
+void fiber_add_deferred(
         fjx_fiber *f,
-        cleanup_func_t cleanup,
+        deferred_func_t cleanup,
         void *data) {
     void** stack_ptr = (void **)f->stack_top;
     *(stack_ptr - 1) = NULL;
@@ -30,8 +30,8 @@ static void fiber_yield_impl(fjx_fiber_scheduler *sched) {
         fjx_thread_yield();
     } else {
         fjx_fiber_pair p = { .sched = sched, .f = &f };
-        fiber_insert_cleanup(&f,
-                (cleanup_func_t)enqueue_fiber_pair,
+        fiber_add_deferred(&f,
+                (deferred_func_t)enqueue_fiber_pair,
                 &p);
         fiber_switch(&f);
     }
@@ -47,7 +47,7 @@ void fiber_exit(fjx_fiber_scheduler *sched) {
 
     get_available_fiber(sched, &f);
 
-    fiber_insert_cleanup(&f, (cleanup_func_t)recycle_fiber_pair, &p);
+    fiber_add_deferred(&f, (deferred_func_t)recycle_fiber_pair, &p);
     fiber_switch(&f);
 }
 

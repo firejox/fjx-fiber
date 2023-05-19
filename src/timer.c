@@ -125,7 +125,7 @@ void fiber_timer_set_timeout(
     } else {
         fjx_timer_pair p = {.node = &node, .timer = timer};
         get_available_fiber(sched, &node.f);
-        fiber_insert_cleanup(&node.f, timer_add_fiber, &p);
+        fiber_add_deferred(&node.f, timer_add_fiber, &p);
         fiber_switch(&node.f);
     }
 }

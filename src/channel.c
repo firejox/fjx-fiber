@@ -57,8 +57,8 @@ static int fiber_channel_send_impl(
                 src.fiber.stack_top = dest->fiber.stack_top;
 
                 fjx_fiber_pair p = {.sched = sched, .f = &src.fiber};
-                fiber_insert_cleanup(&src.fiber,
-                        (cleanup_func_t)enqueue_fiber_pair,
+                fiber_add_deferred(&src.fiber,
+                        (deferred_func_t)enqueue_fiber_pair,
                         &p);
                 fiber_switch(&src.fiber);
                 return CHANNEL_SUCCESS;
@@ -67,7 +67,7 @@ static int fiber_channel_send_impl(
 
                 src.fiber.stack_top = current_work_thread_fiber(sched)->stack_top;
 
-                fiber_insert_cleanup(&src.fiber, (cleanup_func_t)fjx_spinlock_unlock, &ch->lock);
+                fiber_add_deferred(&src.fiber, (deferred_func_t)fjx_spinlock_unlock, &ch->lock);
                 fiber_switch(&src.fiber);
                 return src.state;
             }
@@ -104,7 +104,7 @@ static int fiber_channel_receive_impl(
 
             dest.fiber.stack_top = current_work_thread_fiber(sched)->stack_top;
 
-            fiber_insert_cleanup(&dest.fiber, (cleanup_func_t)fjx_spinlock_unlock, &ch->lock);
+            fiber_add_deferred(&dest.fiber, (deferred_func_t)fjx_spinlock_unlock, &ch->lock);
             fiber_switch(&dest.fiber);
             return dest.state;
         } else {
@@ -121,8 +121,8 @@ static int fiber_channel_receive_impl(
         dest.fiber.stack_top = src->fiber.stack_top;
 
         fjx_fiber_pair p = {.sched = sched, .f = &dest.fiber};
-        fiber_insert_cleanup(&dest.fiber,
-                (cleanup_func_t)enqueue_fiber_pair,
+        fiber_add_deferred(&dest.fiber,
+                (deferred_func_t)enqueue_fiber_pair,
                 &p);
         fiber_switch(&dest.fiber);
         return CHANNEL_SUCCESS;
