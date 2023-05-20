@@ -41,16 +41,23 @@ FetchContent_MakeAvailable(fjx-utils)
 set_property(DIRECTORY ${fjx-utils_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL YES)
 
 set_property(TARGET fjx-utils.utils-objects PROPERTY C_VISIBILITY_PRESET hidden)
+
+add_library(fiber-utils INTERFACE)
+target_sources(fiber-utils
+    INTERFACE $<TARGET_OBJECTS:fjx-libs::utils-objects>)
+
+target_link_libraries(fiber-utils
+    INTERFACE fjx-utils.utils-headers)
+
 target_link_libraries(fiber-objects
-    PRIVATE     fjx-libs::utils-headers
+    PRIVATE     fjx-utils.utils-headers
     PRIVATE     fiber-compl
     PRIVATE     fiber-headers)
 
 add_library(fiber STATIC)
 target_link_libraries(fiber
     PRIVATE     fiber-objects
-    PRIVATE     fjx-libs::utils-headers
-    PRIVATE     fjx-libs::utils-objects
+    PRIVATE     fiber-utils
     PRIVATE     fiber-compl
     INTERFACE   fiber-headers)
 set_target_properties(fiber
@@ -60,10 +67,21 @@ set_target_properties(fiber
 add_library(fiber-shared SHARED)
 target_link_libraries(fiber-shared
     PRIVATE     fiber-objects
-    PRIVATE     fjx-libs::utils-headers
-    PRIVATE     fjx-libs::utils-objects
+    PRIVATE     fiber-utils
     PRIVATE     fiber-compl
     INTERFACE   fiber-headers)
 set_target_properties(fiber-shared
     PROPERTIES
     OUTPUT_NAME ${PROJECT_NAME})
+
+add_custom_command(
+    TARGET fiber POST_BUILD
+    DEPENDS fiber
+    COMMAND $<$<CONFIG:release>:${CMAKE_STRIP}>
+    ARGS --strip-debug --strip-unneeded $<TARGET_FILE:fiber>)
+
+add_custom_command(
+    TARGET fiber-shared POST_BUILD
+    DEPENDS fiber-shared
+    COMMAND $<$<CONFIG:release>:${CMAKE_STRIP}>
+    ARGS --strip-all $<TARGET_FILE:fiber-shared>)

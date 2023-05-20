@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.23)
 
 project(fjx-fiber C ASM)
 
@@ -31,15 +31,52 @@ target_link_libraries(fiber-compl
 
 add_library(fiber-headers INTERFACE)
 target_include_directories(fiber-headers
-    INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
+    INTERFACE $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    INTERFACE $<INSTALL_INTERFACE:include>)
+
+add_library(fiber-headers-export INTERFACE)
+target_sources(fiber-headers-export
+    INTERFACE
+    FILE_SET pub0 TYPE HEADERS BASE_DIRS include FILES
+    include/fjx-fiber.h
+    FILE_SET pub1 TYPE HEADERS BASE_DIRS include/fjx-fiber FILES
+    include/fjx-fiber/fiber.h
+    include/fjx-fiber/timer.h
+    include/fjx-fiber/channel.h
+    include/fjx-fiber/mutex.h
+    include/fjx-fiber/scheduler.h
+    include/fjx-fiber/semaphore.h)
 
 add_subdirectory(src)
 
-add_subdirectory(demo)
-install(TARGETS fiber fiber-shared DESTINATION lib)
-install(DIRECTORY include/fjx-fiber DESTINATION include
-    PATTERN "internal" EXCLUDE)
-install(FILES include/fjx-fiber.h DESTINATION include)
+add_subdirectory(demo EXCLUDE_FROM_ALL)
+
+install(TARGETS
+    fiber
+    fiber-shared
+    fiber-objects
+    fiber-compl
+    fiber-compl-debug
+    fiber-compl-release
+    fiber-headers
+    fiber-headers-export
+    fiber-utils
+    fjx-utils.utils-headers
+    EXPORT fiber-targets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    FILE_SET pub0 DESTINATION include
+    FILE_SET pub1 DESTINATION include/fjx-fiber)
+
+install(EXPORT fiber-targets
+    NAMESPACE "fjx-libs::"
+    FILE fiber.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/fjx-libs)
+
+export(EXPORT fiber-targets
+    NAMESPACE "fjx-libs::"
+    FILE fiber.cmake)
 
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
 set(CPACK_PACKAGE_CONTACT "Firejox firejox@gmail.com")
