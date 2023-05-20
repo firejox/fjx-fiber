@@ -43,7 +43,7 @@ static inline bool insert_time_node(fjx_timer_node *node, fjx_fiber_timer *timer
             timer->min_time = &node->link;
             fjx_splay_top(&node->link, &timer->time_tree);
             return true;
-        } else if (time_comp(max_time, node)) {
+        } else if (!time_comp(node, max_time)) {
             fjx_list_add_tail(&timer->time_list, &node->f.link);
 
             fjx_splay_node_link(&node->link, &max_time->link, &max_time->link.right);
