@@ -51,6 +51,20 @@ add_subdirectory(src)
 
 add_subdirectory(demo EXCLUDE_FROM_ALL)
 
+add_subdirectory(tests EXCLUDE_FROM_ALL)
+get_directory_property(TEST_EXEC_LIST DIRECTORY tests DEFINITION TEST_EXEC_LIST)
+
+set(CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+enable_testing()
+
+foreach (test_name IN LISTS TEST_EXEC_LIST)
+	add_test(NAME "${test_name}" COMMAND ${CMAKE_COMMAND}
+		--build ${CMAKE_BINARY_DIR}
+		--target ${test_name})
+	add_custom_target("${test_name}" $<TARGET_FILE:build.${test_name}>)
+	add_dependencies(${test_name} "build.${test_name}")
+endforeach()
+
 install(TARGETS
     fiber
     fiber-shared
