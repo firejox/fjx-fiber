@@ -1,7 +1,11 @@
-#define _DEFAULT_SOURCE
-#include <sys/mman.h>
+
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+#   define _DEFAULT_SOURCE
+#   include <sys/mman.h>
+#   include <unistd.h>
+#endif
+
 #include <stdlib.h>
-#include <unistd.h>
 #include "fjx-fiber/internal/fiber-memory.h"
 #include "fjx-fiber/internal/debug.h"
 
@@ -18,6 +22,7 @@ static inline void *align_address(void *addr) {
 }
 
 static inline void *allocate_stack(void) {
+#if defined(__linux__)
     void *addr = mmap(
         NULL,
         STACK_SIZE,
@@ -27,6 +32,10 @@ static inline void *allocate_stack(void) {
         0);
 
     ERROR_ABORT_IF(addr, MAP_FAILED, "allocate stack failed");
+#else
+    void *addr = aligned_alloc(16, STACK_SIZE);
+    ERROR_ABORT_IF(addr, NULL, "allocate stack failed");
+#endif
 
     return addr;
 }
