@@ -5,12 +5,17 @@
 #   if defined(__GNUC__)
 #       define fjx_cpu_pause() __builtin_ia32_pause()
 #   elif defined(_MSC_VER) || defined(__INTEL_COMPILER)
+#       include <immintrin.h>
 #       define fjx_cpu_pause() _mm_pause()
 #   else
 #       define fjx_cpu_pause() ((void)(0))
 #   endif
 #elif defined(__arm__) || defined(__aarch64__)
-#   define fjx_cpu_pause() __yield()
+#   if defined(__GNUC__)
+#       define fjx_cpu_pause() __asm__ __volatile__("yield")
+#   else
+#       define fjx_cpu_pause() ((void)0)
+#   endif
 #else
 #   define fjx_cpu_pause() ((void)0)
 #endif

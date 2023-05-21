@@ -3,8 +3,10 @@
 
 #ifndef USE_SYSTEM_THREAD
 #   include "./std-thread/rwlock.h"
-#else
+#elif defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 #   include "./pthread/rwlock.h"
+#else
+#   error "No thread library support"
 #endif
 
 #endif

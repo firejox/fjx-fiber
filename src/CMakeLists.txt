@@ -26,7 +26,11 @@ else()
 endif()
 
 if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
-    target_sources(fiber-objects PRIVATE gas-amd64-sysv.s)
+    target_sources(fiber-objects PRIVATE
+        $<$<OR:$<BOOL:${UNIX}>,$<BOOL:${APPLE}>>:gas-amd64-sysv.s>
+        $<$<BOOL:${WIN32}>:gas-ms-x64.s>)
+elseif (${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86")
+    target_sources(fiber-objects PRIVATE gas-i386-sysv.s)
 endif()
 
 target_sources(fiber-objects PRIVATE ${LIB_SOURCE})
