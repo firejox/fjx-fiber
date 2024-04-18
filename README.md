@@ -1,4 +1,4 @@
-# fjx-fiber
+# fjx-fiber [![Unit Test](https://github.com/firejox/fjx-fiber/actions/workflows/unit-test.yml/badge.svg)](https://github.com/firejox/fjx-fiber/actions/workflows/unit-test.yml)
 
 A thread safe stackful coroutine library in C. It would require thread library installed.
 
